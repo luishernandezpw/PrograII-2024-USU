@@ -6,4 +6,92 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <TabHost
+        android:id="@+id/tbhConversores"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TabWidget
+                android:id="@android:id/tabs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <FrameLayout
+                android:id="@android:id/tabcontent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <RelativeLayout
+                    android:id="@+id/tabLongitud"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/lblLongitudDe"
+                        android:layout_marginTop="60dp"
+                        android:layout_marginLeft="40dp"
+                        android:text="DE:"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                    <TextView
+                        android:id="@+id/lblLongitudA"
+                        android:layout_below="@+id/lblLongitudDe"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginLeft="40dp"
+                        android:text="A:"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                    <Spinner
+                        android:id="@+id/spnLongitudDe"
+                        android:layout_below="@+id/lblLongitudDe"
+                        android:layout_marginTop="-20dp"
+                        android:layout_marginLeft="80dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+                    <Spinner
+                        android:id="@+id/spnLongitudA"
+                        android:layout_below="@+id/lblLongitudA"
+                        android:layout_marginTop="-20dp"
+                        android:layout_marginLeft="80dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+                    <EditText
+                        android:id="@+id/txtLongitudCantidad"
+                        android:layout_below="@+id/spnLongitudA"
+                        android:layout_marginTop="20dp"
+                        android:hint="Cantidad a Convertir"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+                    <Button
+                        android:id="@+id/btnLongitudConvertir"
+                        android:layout_below="@+id/txtLongitudCantidad"
+                        android:layout_marginTop="20dp"
+                        android:text="CONVERTIR"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/tabAlmacenamiento"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/tabMonedas"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                </RelativeLayout>
+            </FrameLayout>
+        </LinearLayout>
+    </TabHost>
 </RelativeLayout>
