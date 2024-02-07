@@ -1,10 +1,21 @@
 <resources>
-    <string name="app_name">Calculadora basica</string>
-
-    <string-array name="spnopciones">
-        <item>Suma</item>
-        <item>Resta</item>
-        <item>Multiplicacion</item>
-        <item>Division</item>
+    <string name="app_name">Conversores</string>
+    <string-array name="spnLongitud">
+        <item>Metros</item>
+        <item>Centimetros</item>
+        <item>Pulgadas</item>
+        <item>Pies</item>
+        <item>Varas</item>
+        <item>Yardas</item>
+        <item>Kilometros</item>
+        <item>Millas</item>
+    </string-array>
+    <string-array name="spnAlmacenamiento">
+        <item>MB</item>
+        <item>Bit</item>
+        <item>Byte</item>
+        <item>KB</item>
+        <item>GB</item>
+        <item>TB</item>
     </string-array>
 </resources>

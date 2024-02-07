@@ -46,14 +46,17 @@
                         android:layout_marginTop="80dp"
                         android:layout_marginLeft="40dp"
                         android:text="A:" />
+
                     <Spinner
                         android:id="@+id/spnLongitudDe"
+                        android:entries="@array/spnLongitud"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="35dp"
-                        android:layout_marginLeft="80dp"/>
+                        android:layout_marginLeft="80dp"
+                        android:layout_marginTop="35dp" />
                     <Spinner
                         android:id="@+id/spnLongitudA"
+                        android:entries="@array/spnLongitud"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="75dp"
@@ -77,7 +80,47 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/lblAlmacenamientoDe"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="40dp"
+                        android:layout_marginLeft="40dp"
+                        android:text="DE:" />
+                    <TextView
+                        android:id="@+id/lblAlmacenamientoA"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="80dp"
+                        android:layout_marginLeft="40dp"
+                        android:text="A:" />
 
+                    <Spinner
+                        android:id="@+id/spnAlmacenamientoDe"
+                        android:entries="@array/spnAlmacenamiento"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="80dp"
+                        android:layout_marginTop="35dp" />
+                    <Spinner
+                        android:id="@+id/spnAlmacenamientoA"
+                        android:entries="@array/spnAlmacenamiento"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="75dp"
+                        android:layout_marginLeft="80dp"/>
+                    <EditText
+                        android:id="@+id/txtAlmacenamientoCantidad"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="120dp"
+                        android:hint="Cantidad a convertir"/>
+                    <Button
+                        android:id="@+id/btnAlmacenamientoConvertir"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="180dp"
+                        android:text="CONVERTIR"/>
                 </RelativeLayout>
 
                 <RelativeLayout
