@@ -7,13 +7,13 @@
     tools:context=".MainActivity">
 
     <TextView
-        android:id="@+id/lblLuz"
+        android:id="@+id/lblGps"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
         android:layout_marginTop="60dp"
         android:background="#FFFFFF"
-        android:text="Sensor Luz: ?"
+        android:text="Sensor Gps: ?"
         android:textColor="#000000" />
 
 </RelativeLayout>

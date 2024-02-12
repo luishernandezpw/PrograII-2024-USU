@@ -1,12 +1,21 @@
 package com.ugb.controlesbasicos;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.os.LocaleListCompat;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -17,58 +26,33 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
     TextView tempVal;
-    SensorManager sensorManager;
-    Sensor sensor;
-    SensorEventListener sensorEventListener;
-
+    LocationManager locationManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        tempVal = findViewById(R.id.lblLuz);
-        activarSensorLuz();
+        tempVal = findViewById(R.id.lblGps);
+        obtenerPosicion();
     }
-    @Override
-    protected void onResume() {
-        iniciarLuz();
-        super.onResume();
-    }
-    @Override
-    protected void onPause() {
-        detenerLuz();
-        super.onPause();
-    }
-    private void activarSensorLuz(){
-        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        sensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
-        if(sensor==null){
-            tempVal.setText("Tu telefono NO tiene sensor Luz.");
-            finish();
-        }
-        sensorEventListener = new SensorEventListener() {
-            @Override
-            public void onSensorChanged(SensorEvent sensorEvent) {
-                double valor = sensorEvent.values[0];
-                tempVal.setText("Luz: "+ valor);
-                if( valor<=20 ){
-                    getWindow().getDecorView().setBackgroundColor(Color.BLUE);
-                } else if (valor<=50) {
-                    getWindow().getDecorView().setBackgroundColor(Color.RED);
-                }else{
-                    getWindow().getDecorView().setBackgroundColor(Color.YELLOW);
-                }
+    private void obtenerPosicion(){
+        try {
+            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                    ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+                tempVal.setText("No tienes permiso de acceder al GPS");
+                return;
             }
-            @Override
-            public void onAccuracyChanged(Sensor sensor, int i) {
+            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            mostrarPosicion(location);
 
-            }
-        };
+        }catch (Exception ex){
+            tempVal.setText(ex.getMessage());
+        }
     }
-    private void iniciarLuz(){
-        sensorManager.registerListener(sensorEventListener, sensor, 2000*1000);
+    private void mostrarPosicion(Location location){
+        tempVal.setText("Posicion: Latitud: "+ location.getAltitude()+"; Longitud: "+ location.getLongitude() +"; Altitud: "+location.getAltitude());
     }
-    private void detenerLuz(){
-        sensorManager.unregisterListener(sensorEventListener);
-    }
+
 }
