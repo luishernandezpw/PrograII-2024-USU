@@ -7,10 +7,10 @@
     tools:context=".MainActivity">
 
     <TextView
-        android:id="@+id/lblAcelerometro"
+        android:id="@+id/lblProximidad"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Sensor Acelerometro: ?"
+        android:text="Sensor Proximidad: ?"
         android:layout_marginTop="60dp"
         android:layout_marginLeft="20dp"/>
 
