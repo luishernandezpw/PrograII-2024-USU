@@ -6,5 +6,61 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+<EditText
+    android:id="@+id/txtnombre"
+    android:layout_marginTop="40dp"
+    android:hint="Nombre"
+    android:inputType="textPersonName"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"/>
+    <EditText
+        android:id="@+id/txtdireccion"
+        android:layout_marginTop="40dp"
+        android:hint="Direccion"
+        android:layout_below="@id/txtnombre"
+        android:inputType="textMultiLine"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <EditText
+        android:id="@+id/txtTelefono"
+        android:layout_marginTop="40dp"
+        android:hint="Telefono"
+        android:inputType="phone"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_width="match_parent"
+        android:layout_below="@id/txtdireccion"
+        android:layout_height="wrap_content"/>
+    <EditText
+        android:id="@+id/txtemail"
+        android:layout_marginTop="40dp"
+        android:hint="Email"
+        android:inputType="textEmailAddress"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_width="match_parent"
+        android:layout_below="@id/txtTelefono"
+        android:layout_height="wrap_content"/>
+    <EditText
+        android:id="@+id/txtdui"
+        android:layout_marginTop="40dp"
+        android:hint="DUI"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_below="@id/txtemail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/btnGuardarAmigos"
+        android:text="GUARDAR AMIGO"
+        android:layout_below="@id/txtdui"
+        android:layout_marginTop="40dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 
 </RelativeLayout>
