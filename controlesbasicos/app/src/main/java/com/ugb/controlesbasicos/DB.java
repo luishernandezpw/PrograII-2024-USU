@@ -1,6 +1,7 @@
 package com.ugb.controlesbasicos;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -35,5 +36,11 @@ public class DB extends SQLiteOpenHelper {
         }catch (Exception e){
             return "Error: "+ e.getMessage();
         }
+    }
+    public Cursor consultar_amigos(){
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM amigos ORDER BY nombre", null);
+        return cursor;
+
     }
 }
