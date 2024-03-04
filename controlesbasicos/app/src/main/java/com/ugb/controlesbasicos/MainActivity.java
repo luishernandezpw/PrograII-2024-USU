@@ -2,6 +2,7 @@ package com.ugb.controlesbasicos;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -11,15 +12,25 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 public class MainActivity extends AppCompatActivity {
     TextView tempVal;
     Button btn;
+    FloatingActionButton btnRegresar;
     String accion="nuevo", id="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        btnRegresar = findViewById(R.id.btnRegresarListaAmigos);
+        btnRegresar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                regresarListaAmigos();
+            }
+        });
         btn = findViewById(R.id.btnGuardarAmigos);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -49,5 +60,9 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+    private void regresarListaAmigos(){
+        Intent abrirVentana = new Intent(getApplicationContext(), lista_amigos.class);
+        startActivity(abrirVentana);
     }
 }
