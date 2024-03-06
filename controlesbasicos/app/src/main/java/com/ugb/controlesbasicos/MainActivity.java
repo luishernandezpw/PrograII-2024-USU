@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
                 String respuesta = db.administrar_amigos(accion, datos);
                 if( respuesta.equals("ok") ){
                     Toast.makeText(getApplicationContext(), "Amigo Registrado con Exito.", Toast.LENGTH_SHORT).show();
+                    regresarListaAmigos();
                 }else{
                     Toast.makeText(getApplicationContext(), "Error: "+ respuesta, Toast.LENGTH_LONG).show();
                 }

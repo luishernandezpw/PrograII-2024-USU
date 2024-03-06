@@ -8,9 +8,9 @@
 
     <EditText
         android:id="@+id/txtBuscarAmigos"
-        android:hint="Buscar amigos"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:hint="Buscar amigos" />
     <ListView
         android:id="@+id/ltsAmigos"
         android:layout_marginTop="40dp"
