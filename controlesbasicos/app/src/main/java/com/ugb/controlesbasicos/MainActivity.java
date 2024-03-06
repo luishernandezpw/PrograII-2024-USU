@@ -61,9 +61,37 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        mostrarDatosAmigos();
     }
     private void regresarListaAmigos(){
         Intent abrirVentana = new Intent(getApplicationContext(), lista_amigos.class);
         startActivity(abrirVentana);
+    }
+    private void mostrarDatosAmigos(){
+        try {
+            Bundle parametros = getIntent().getExtras();
+            accion = parametros.getString("accion");
+            if( accion.equals("modificar") ){
+                String[] datos = parametros.getStringArray("amigos");
+                id = datos[0];
+
+                tempVal = findViewById(R.id.txtnombre);
+                tempVal.setText(datos[1]);
+
+                tempVal = findViewById(R.id.txtdireccion);
+                tempVal.setText(datos[2]);
+
+                tempVal = findViewById(R.id.txtTelefono);
+                tempVal.setText(datos[3]);
+
+                tempVal = findViewById(R.id.txtemail);
+                tempVal.setText(datos[4]);
+
+                tempVal = findViewById(R.id.txtdui);
+                tempVal.setText(datos[5]);
+            }
+        }catch (Exception e){
+            Toast.makeText(getApplicationContext(), "Error al mostrar los datos: "+ e.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 }

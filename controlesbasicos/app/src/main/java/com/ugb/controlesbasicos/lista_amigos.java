@@ -1,5 +1,6 @@
 package com.ugb.controlesbasicos;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -7,7 +8,11 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.ContextMenu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -19,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 public class lista_amigos extends AppCompatActivity {
+    Bundle parametros = new Bundle();
     FloatingActionButton btn;
     ListView lts;
     Cursor cAmigos;
@@ -35,14 +41,53 @@ public class lista_amigos extends AppCompatActivity {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                abrirActividad();
+                parametros.putString("accion", "nuevo");
+                abrirActividad(parametros);
             }
         });
         obtenerAmigos();
         buscarAmigos();
     }
-    private void abrirActividad(){
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.mimenu, menu);
+
+        AdapterView.AdapterContextMenuInfo info =(AdapterView.AdapterContextMenuInfo)menuInfo;
+        cAmigos.moveToPosition(info.position);
+        menu.setHeaderTitle(cAmigos.getString(1));//1 es el nombre del amigo
+    }
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        try {
+            switch (item.getItemId()){
+                case R.id.mnxAgregar:
+                    parametros.putString("accion", "nuevo");
+                    abrirActividad(parametros);
+                    break;
+                case R.id.mnxModificar:
+                    String amigos[] = {
+                            cAmigos.getString(0), //idAmigo
+                            cAmigos.getString(1), //nombre
+                            cAmigos.getString(2), //direccion
+                            cAmigos.getString(3), //tel
+                            cAmigos.getString(4), //email
+                            cAmigos.getString(5) //dui
+                    };
+                    parametros.putString("accion","modificar");
+                    parametros.putStringArray("amigos", amigos);
+                    abrirActividad(parametros);
+            }
+            return true;
+        }catch (Exception e){
+            mostrarMsg("Error en menu: "+ e.getMessage());
+            return super.onContextItemSelected(item);
+        }
+    }
+    private void abrirActividad(Bundle parametros){
         Intent abriVentana = new Intent(getApplicationContext(), MainActivity.class);
+        abriVentana.putExtras(parametros);
         startActivity(abriVentana);
     }
     private void obtenerAmigos(){

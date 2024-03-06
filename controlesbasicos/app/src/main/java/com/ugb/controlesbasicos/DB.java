@@ -25,11 +25,11 @@ public class DB extends SQLiteOpenHelper {
     public String administrar_amigos(String accion, String[] datos){
         try {
             SQLiteDatabase db = getWritableDatabase();
-            if(accion=="nuevo"){
+            if(accion.equals("nuevo")){
                 db.execSQL("INSERT INTO amigos(nombre,direccion,telefono,email,dui) VALUES('"+ datos[1] +"','"+ datos[2] +"','"+ datos[3] +"','"+ datos[4] +"','"+ datos[5] +"')");
-            } else if (accion=="modificar") {
+            } else if (accion.equals("modificar")) {
                 db.execSQL("UPDATE amigos SET nombre='"+ datos[1] +"',direccion='"+ datos[2] +"',telefono='"+ datos[3] +"',email='"+ datos[4] +"',dui='"+ datos[5] +"' WHERE idAmigo='"+ datos[0] +"'");
-            } else if (accion=="eliminar") {
+            } else if (accion.equals("eliminar")) {
                 db.execSQL("DELETE FROM amigos WHERE idAmigo='"+ datos[0] +"'");
             }
             return "ok";
