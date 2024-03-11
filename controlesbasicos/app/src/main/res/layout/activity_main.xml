@@ -6,15 +6,28 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-<EditText
-    android:id="@+id/txtnombre"
-    android:layout_marginTop="40dp"
-    android:hint="Nombre"
-    android:inputType="textPersonName"
-    android:layout_marginLeft="10dp"
-    android:layout_marginRight="10dp"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"/>
+    <ImageButton
+        android:id="@+id/imgAmigo"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginStart="146dp"
+        android:layout_marginTop="27dp"
+        android:layout_marginRight="165dp"
+        android:src="@android:drawable/ic_menu_camera" />
+
+    <EditText
+        android:id="@+id/txtnombre"
+        android:layout_marginTop="40dp"
+        android:hint="Nombre"
+        android:inputType="textPersonName"
+        android:layout_below="@id/imgAmigo"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
     <EditText
         android:id="@+id/txtdireccion"
         android:layout_marginTop="40dp"
