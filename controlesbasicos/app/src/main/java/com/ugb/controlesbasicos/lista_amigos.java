@@ -1,8 +1,10 @@
 package com.ugb.controlesbasicos;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -78,11 +80,43 @@ public class lista_amigos extends AppCompatActivity {
                     parametros.putString("accion","modificar");
                     parametros.putStringArray("amigos", amigos);
                     abrirActividad(parametros);
+                    break;
+                case R.id.mnxEliminar:
+                    eliminarAmigos();
+                    break;
             }
             return true;
         }catch (Exception e){
             mostrarMsg("Error en menu: "+ e.getMessage());
             return super.onContextItemSelected(item);
+        }
+    }
+    private void eliminarAmigos(){
+        try {
+            AlertDialog.Builder confirmacion = new AlertDialog.Builder(lista_amigos.this);
+            confirmacion.setTitle("Esta seguro de Eliminar a: ");
+            confirmacion.setMessage(cAmigos.getString(1));
+            confirmacion.setPositiveButton("SI", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    String respuesta = dbAmigos.administrar_amigos("eliminar", new String[]{cAmigos.getString(0)});
+                    if (respuesta.equals("ok")) {
+                        mostrarMsg("Amigo eliminado con exito.");
+                        obtenerAmigos();
+                    } else {
+                        mostrarMsg("Error al eliminar amigo: " + respuesta);
+                    }
+                }
+            });
+            confirmacion.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.dismiss();
+                }
+            });
+            confirmacion.create().show();
+        }catch (Exception e){
+            mostrarMsg("Error al eliminar: "+ e.getMessage());
         }
     }
     private void abrirActividad(Bundle parametros){
