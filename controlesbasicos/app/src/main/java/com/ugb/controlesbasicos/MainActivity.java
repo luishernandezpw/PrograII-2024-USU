@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
     }
     private void tomarFotoAmigo(){
         tomarFotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if( tomarFotoIntent.resolveActivity(getPackageManager())!=null ){
+        //if( tomarFotoIntent.resolveActivity(getPackageManager())!=null ){
             File fotoAmigo = null;
             try{
                 fotoAmigo = crearImagenAmigo();
@@ -114,9 +114,9 @@ public class MainActivity extends AppCompatActivity {
             }catch (Exception e){
                 mostrarMsg("Error al tomar la foto: "+ e.getMessage());
             }
-        }else{
+        /*}else{
             mostrarMsg("No se selecciono una foto...");
-        }
+        }*/
     }
     private File crearImagenAmigo() throws Exception{
         String fechaHoraMs = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
