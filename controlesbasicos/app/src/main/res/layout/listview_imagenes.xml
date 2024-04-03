@@ -22,12 +22,12 @@
         android:layout_marginLeft="80dp"
         android:layout_marginTop="10dp"
         android:text="Nombre"
-        android:textColor="@color/white"
+        android:textColor="@color/black"
         android:textSize="18dp" />
     <TextView
         android:id="@+id/lblTelefono"
         android:text="Telefono"
-        android:textColor="@color/white"
+        android:textColor="@color/black"
         android:layout_marginTop="30dp"
         android:layout_marginLeft="80dp"
         android:layout_width="wrap_content"
@@ -35,7 +35,7 @@
     <TextView
         android:id="@+id/lblEmail"
         android:text="Email"
-        android:textColor="@color/white"
+        android:textColor="@color/black"
         android:layout_marginTop="50dp"
         android:layout_marginLeft="80dp"
         android:layout_width="wrap_content"
