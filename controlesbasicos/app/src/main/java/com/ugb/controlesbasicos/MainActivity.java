@@ -22,6 +22,8 @@ import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import org.json.JSONObject;
+
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -30,14 +32,16 @@ public class MainActivity extends AppCompatActivity {
     TextView tempVal;
     Button btn;
     FloatingActionButton btnRegresar;
-    String accion="nuevo", id="", urlCompletaImg="";
+    String accion="nuevo", id="", urlCompletaImg="", rev="", idAmigo="";
     Intent tomarFotoIntent;
     ImageView img;
+    utilidades utls;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        utls = new utilidades();
         img = findViewById(R.id.imgAmigo);
         img.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -56,29 +60,58 @@ public class MainActivity extends AppCompatActivity {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                tempVal = findViewById(R.id.txtnombre);
-                String nombre = tempVal.getText().toString();
+                try {
+                    tempVal = findViewById(R.id.txtnombre);
+                    String nombre = tempVal.getText().toString();
 
-                tempVal = findViewById(R.id.txtdireccion);
-                String direccion = tempVal.getText().toString();
+                    tempVal = findViewById(R.id.txtdireccion);
+                    String direccion = tempVal.getText().toString();
 
-                tempVal = findViewById(R.id.txtTelefono);
-                String tel = tempVal.getText().toString();
+                    tempVal = findViewById(R.id.txtTelefono);
+                    String tel = tempVal.getText().toString();
 
-                tempVal = findViewById(R.id.txtemail);
-                String email = tempVal.getText().toString();
+                    tempVal = findViewById(R.id.txtemail);
+                    String email = tempVal.getText().toString();
 
-                tempVal = findViewById(R.id.txtdui);
-                String dui = tempVal.getText().toString();
+                    tempVal = findViewById(R.id.txtdui);
+                    String dui = tempVal.getText().toString();
 
-                DB db = new DB(getApplicationContext(),"", null, 1);
-                String[] datos = new String[]{id,nombre,direccion,tel,email,dui, urlCompletaImg};
-                String respuesta = db.administrar_amigos(accion, datos);
-                if( respuesta.equals("ok") ){
-                    Toast.makeText(getApplicationContext(), "Amigo Registrado con Exito.", Toast.LENGTH_SHORT).show();
-                    regresarListaAmigos();
-                }else{
-                    Toast.makeText(getApplicationContext(), "Error: "+ respuesta, Toast.LENGTH_LONG).show();
+                    //guardar datos en el servidor.
+                    JSONObject datosAmigos = new JSONObject();
+                    if( accion.equals("modificar") && id.length()>0 && rev.length()>0 ){
+                        datosAmigos.put("_id", id);
+                        datosAmigos.put("_rev", rev);
+                    }
+                    datosAmigos.put("idAmigo", idAmigo);
+                    datosAmigos.put("nombre", nombre);
+                    datosAmigos.put("direccion", direccion);
+                    datosAmigos.put("telefono", tel);
+                    datosAmigos.put("email", email);
+                    datosAmigos.put("dui", dui);
+                    datosAmigos.put("urlCompletaFoto", urlCompletaImg);
+                    String respuesta = "";
+
+                    enviarDatosServidor objGuardarDatosServidor = new enviarDatosServidor(getApplicationContext());
+                    respuesta = objGuardarDatosServidor.execute(datosAmigos.toString()).get();
+
+                    JSONObject respuestaJSONObject = new JSONObject(respuesta);
+                    if( respuestaJSONObject.getBoolean("ok") ){
+                        id = respuestaJSONObject.getString("id");
+                        rev = respuestaJSONObject.getString("rev");
+                    }else{
+                        respuesta = "Error al guardar en servidor: "+ respuesta;
+                    }
+                    DB db = new DB(getApplicationContext(), "", null, 1);
+                    String[] datos = new String[]{id, rev,idAmigo, nombre, direccion, tel, email, dui, urlCompletaImg};
+                    respuesta = db.administrar_amigos(accion, datos);
+                    if (respuesta.equals("ok")) {
+                        Toast.makeText(getApplicationContext(), "Amigo Registrado con Exito.", Toast.LENGTH_SHORT).show();
+                        regresarListaAmigos();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Error: " + respuesta, Toast.LENGTH_LONG).show();
+                    }
+                }catch (Exception e){
+                    mostrarMsg("Error al guardar: "+ e.getMessage());
                 }
             }
         });
@@ -141,27 +174,31 @@ public class MainActivity extends AppCompatActivity {
             Bundle parametros = getIntent().getExtras();
             accion = parametros.getString("accion");
             if( accion.equals("modificar") ){
-                String[] datos = parametros.getStringArray("amigos");
-                id = datos[0];
+                JSONObject jsonObject = new JSONObject(parametros.getString("amigos")).getJSONObject("value");
+                id = jsonObject.getString("_id");
+                rev = jsonObject.getString("_rev");
+                idAmigo = jsonObject.getString("idAmigo");
 
                 tempVal = findViewById(R.id.txtnombre);
-                tempVal.setText(datos[1]);
+                tempVal.setText(jsonObject.getString("nombre"));
 
                 tempVal = findViewById(R.id.txtdireccion);
-                tempVal.setText(datos[2]);
+                tempVal.setText(jsonObject.getString("direccion"));
 
                 tempVal = findViewById(R.id.txtTelefono);
-                tempVal.setText(datos[3]);
+                tempVal.setText(jsonObject.getString("telefono"));
 
                 tempVal = findViewById(R.id.txtemail);
-                tempVal.setText(datos[4]);
+                tempVal.setText(jsonObject.getString("email"));
 
                 tempVal = findViewById(R.id.txtdui);
-                tempVal.setText(datos[5]);
+                tempVal.setText(jsonObject.getString("dui"));
 
-                urlCompletaImg = datos[6];
+                urlCompletaImg = jsonObject.getString("urlCompletaFoto");
                 Bitmap bitmap = BitmapFactory.decodeFile(urlCompletaImg);
                 img.setImageBitmap(bitmap);
+            }else{ //nuevo registro
+                idAmigo = utls.generarIdUnico();
             }
         }catch (Exception e){
             mostrarMsg("Error al mostrar los datos: "+ e.getMessage());

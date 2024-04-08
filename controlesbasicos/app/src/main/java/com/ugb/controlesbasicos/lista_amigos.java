@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -41,6 +42,7 @@ public class lista_amigos extends AppCompatActivity {
     JSONObject jsonObject;
     obtenerDatosServidor datosServidor;
     detectarInternet di;
+    int posicion=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,10 +103,9 @@ public class lista_amigos extends AppCompatActivity {
                     );
                     alAmigos.add(misAmigos);
                 }
-                alAmigosCopy.addAll(alAmigos);
-
                 adaptadorImagenes adImagenes = new adaptadorImagenes(getApplicationContext(), alAmigos);
                 lts.setAdapter(adImagenes);
+                alAmigosCopy.addAll(alAmigos);
 
                 registerForContextMenu(lts);
             }else{
@@ -117,12 +118,16 @@ public class lista_amigos extends AppCompatActivity {
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
+
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.mimenu, menu);
-
-        AdapterView.AdapterContextMenuInfo info =(AdapterView.AdapterContextMenuInfo)menuInfo;
-        cAmigos.moveToPosition(info.position);
-        menu.setHeaderTitle(cAmigos.getString(1));//1 es el nombre del amigo
+        try {
+            AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+            posicion = info.position;
+            menu.setHeaderTitle(datosJSON.getJSONObject(posicion).getJSONObject("value").getString("nombre"));
+        }catch (Exception e){
+            mostrarMsg("Error al mostrar el menu: "+ e.getMessage());
+        }
     }
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
@@ -133,17 +138,8 @@ public class lista_amigos extends AppCompatActivity {
                     abrirActividad(parametros);
                     break;
                 case R.id.mnxModificar:
-                    String amigos[] = {
-                            cAmigos.getString(0), //idAmigo
-                            cAmigos.getString(1), //nombre
-                            cAmigos.getString(2), //direccion
-                            cAmigos.getString(3), //tel
-                            cAmigos.getString(4), //email
-                            cAmigos.getString(5), //dui
-                            cAmigos.getString(6)  //foto
-                    };
                     parametros.putString("accion","modificar");
-                    parametros.putStringArray("amigos", amigos);
+                    parametros.putString("amigos", datosJSON.getJSONObject(posicion).toString());
                     abrirActividad(parametros);
                     break;
                 case R.id.mnxEliminar:
@@ -160,7 +156,7 @@ public class lista_amigos extends AppCompatActivity {
         try {
             AlertDialog.Builder confirmacion = new AlertDialog.Builder(lista_amigos.this);
             confirmacion.setTitle("Esta seguro de Eliminar a: ");
-            confirmacion.setMessage(cAmigos.getString(1));
+            confirmacion.setMessage(datosJSON.getJSONObject(posicion).getJSONObject("value").getString("nombre"));
             confirmacion.setPositiveButton("SI", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
