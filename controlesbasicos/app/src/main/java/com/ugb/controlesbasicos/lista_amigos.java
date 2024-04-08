@@ -48,6 +48,8 @@ public class lista_amigos extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.lista_amigos);
 
+        dbAmigos = new DB(lista_amigos.this, "", null, 1);
+
         btn = findViewById(R.id.btnAbrirNuevosAmigos);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -160,12 +162,16 @@ public class lista_amigos extends AppCompatActivity {
             confirmacion.setPositiveButton("SI", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    String respuesta = dbAmigos.administrar_amigos("eliminar", new String[]{cAmigos.getString(0)});
-                    if (respuesta.equals("ok")) {
-                        mostrarMsg("Amigo eliminado con exito.");
-                        obtenerAmigos();
-                    } else {
-                        mostrarMsg("Error al eliminar amigo: " + respuesta);
+                    try {
+                        String respuesta = dbAmigos.administrar_amigos("eliminar", new String[]{"", "", datosJSON.getJSONObject(posicion).getJSONObject("value").getString("idAmigo")});
+                        if (respuesta.equals("ok")) {
+                            mostrarMsg("Amigo eliminado con exito.");
+                            obtenerAmigos();
+                        } else {
+                            mostrarMsg("Error al eliminar amigo: " + respuesta);
+                        }
+                    }catch (Exception e){
+                        mostrarMsg("Error al eliminar Datos: "+e.getMessage());
                     }
                 }
             });
@@ -187,7 +193,6 @@ public class lista_amigos extends AppCompatActivity {
     }
     private void obtenerAmigos(){
         try{
-            dbAmigos = new DB(lista_amigos.this, "", null, 1);
             cAmigos = dbAmigos.consultar_amigos();
             if ( cAmigos.moveToFirst() ){
                 datosJSON = new JSONArray();

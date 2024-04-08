@@ -33,7 +33,7 @@ public class adaptadorImagenes extends BaseAdapter {
     }
     @Override
     public long getItemId(int i) {
-        return Long.parseLong(datosAmigosArrayList.get(i).getIdAmigo());
+        return i;//Long.parseLong(datosAmigosArrayList.get(i).getIdAmigo());
     }
 
     @Override
