@@ -60,8 +60,9 @@ public class lista_amigos extends AppCompatActivity {
         });
         try{
             di = new detectarInternet(getApplicationContext());
-            if(di.hayConexionInternet()){
+            if(di.hayConexionInternet()){//online
                 obtenerDatosAmigosServidor();
+                sincronizar();
             }else{
                 obtenerAmigos();//offline
             }
@@ -69,6 +70,58 @@ public class lista_amigos extends AppCompatActivity {
             mostrarMsg("Error al detectar si hay conexion "+ e.getMessage());
         }
         buscarAmigos();
+    }
+    private void sincronizar(){
+        try{
+            cAmigos = dbAmigos.pendienteSincronizar();
+            if( cAmigos.moveToFirst() ){//hay registros pendientes de sincronizar
+                jsonObject = new JSONObject();
+                mostrarMsg("Sincronizando...");
+
+                do{
+                    if( cAmigos.getString(0).length()>0 && cAmigos.getString(1).length()>0 ){
+                        jsonObject.put("_id", cAmigos.getString(0));
+                        jsonObject.put("_rev", cAmigos.getString(1));
+                    }
+                    jsonObject.put("idAmigo", cAmigos.getString(2));
+                    jsonObject.put("nombre", cAmigos.getString(3));
+                    jsonObject.put("direccion", cAmigos.getString(4));
+                    jsonObject.put("telefono", cAmigos.getString(5));
+                    jsonObject.put("email", cAmigos.getString(6));
+                    jsonObject.put("dui", cAmigos.getString(7));
+                    jsonObject.put("urlCompletaFoto", cAmigos.getString(8));
+                    jsonObject.put("actualizado", "si");
+
+                    enviarDatosServidor objGuardarDatosServidor = new enviarDatosServidor(getApplicationContext());
+                    String respuesta = objGuardarDatosServidor.execute(jsonObject.toString()).get();
+
+                    JSONObject respuestaJSONObject = new JSONObject(respuesta);
+                    if (respuestaJSONObject.getBoolean("ok")) {
+                        DB db = new DB(getApplicationContext(), "", null, 1);
+                        String[] datos = new String[]{
+                                respuestaJSONObject.getString("id"),
+                                respuestaJSONObject.getString("rev"),
+                                jsonObject.getString("idAmigo"),
+                                jsonObject.getString("nombre"),
+                                jsonObject.getString("direccion"),
+                                jsonObject.getString("telefono"),
+                                jsonObject.getString("email"),
+                                jsonObject.getString("dui"),
+                                jsonObject.getString("urlCompletaFoto"),
+                                jsonObject.getString("actualizado")
+                        };
+                        respuesta = db.administrar_amigos("modificar", datos);
+                        if (!respuesta.equals("ok")) {
+                            mostrarMsg(respuesta);
+                        }
+                    } else {
+                        mostrarMsg("Error al sincronizar en servidor: " + respuesta);
+                    }
+                }while (cAmigos.moveToNext());
+            }
+        }catch (Exception e){
+            mostrarMsg("Error al sincronizar: "+ e.getMessage());
+        }
     }
     private void obtenerDatosAmigosServidor(){
         try{
@@ -207,7 +260,7 @@ public class lista_amigos extends AppCompatActivity {
                     jsonObject.put("telefono",cAmigos.getString(5));
                     jsonObject.put("email",cAmigos.getString(6));
                     jsonObject.put("dui",cAmigos.getString(7));
-                    jsonObject.put("urlfotoCompleta",cAmigos.getString(8));
+                    jsonObject.put("urlCompletaFoto",cAmigos.getString(8));
 
                     jsonObjectValue.put("value", jsonObject);
                     datosJSON.put(jsonObjectValue);

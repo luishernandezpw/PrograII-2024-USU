@@ -36,11 +36,13 @@ public class MainActivity extends AppCompatActivity {
     Intent tomarFotoIntent;
     ImageView img;
     utilidades utls;
+    detectarInternet di;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        di = new detectarInternet(getApplicationContext());
         utls = new utilidades();
         img = findViewById(R.id.imgAmigo);
         img.setOnClickListener(new View.OnClickListener() {
@@ -76,33 +78,37 @@ public class MainActivity extends AppCompatActivity {
                     tempVal = findViewById(R.id.txtdui);
                     String dui = tempVal.getText().toString();
 
+                    String respuesta = "", actualizado="no";
                     //guardar datos en el servidor.
-                    JSONObject datosAmigos = new JSONObject();
-                    if( accion.equals("modificar") && id.length()>0 && rev.length()>0 ){
-                        datosAmigos.put("_id", id);
-                        datosAmigos.put("_rev", rev);
-                    }
-                    datosAmigos.put("idAmigo", idAmigo);
-                    datosAmigos.put("nombre", nombre);
-                    datosAmigos.put("direccion", direccion);
-                    datosAmigos.put("telefono", tel);
-                    datosAmigos.put("email", email);
-                    datosAmigos.put("dui", dui);
-                    datosAmigos.put("urlCompletaFoto", urlCompletaImg);
-                    String respuesta = "";
+                    if(di.hayConexionInternet()) {
+                        JSONObject datosAmigos = new JSONObject();
+                        if (accion.equals("modificar") && id.length() > 0 && rev.length() > 0) {
+                            datosAmigos.put("_id", id);
+                            datosAmigos.put("_rev", rev);
+                        }
+                        datosAmigos.put("idAmigo", idAmigo);
+                        datosAmigos.put("nombre", nombre);
+                        datosAmigos.put("direccion", direccion);
+                        datosAmigos.put("telefono", tel);
+                        datosAmigos.put("email", email);
+                        datosAmigos.put("dui", dui);
+                        datosAmigos.put("urlCompletaFoto", urlCompletaImg);
+                        datosAmigos.put("actualizado", "si");
 
-                    enviarDatosServidor objGuardarDatosServidor = new enviarDatosServidor(getApplicationContext());
-                    respuesta = objGuardarDatosServidor.execute(datosAmigos.toString()).get();
+                        enviarDatosServidor objGuardarDatosServidor = new enviarDatosServidor(getApplicationContext());
+                        respuesta = objGuardarDatosServidor.execute(datosAmigos.toString()).get();
 
-                    JSONObject respuestaJSONObject = new JSONObject(respuesta);
-                    if( respuestaJSONObject.getBoolean("ok") ){
-                        id = respuestaJSONObject.getString("id");
-                        rev = respuestaJSONObject.getString("rev");
-                    }else{
-                        respuesta = "Error al guardar en servidor: "+ respuesta;
+                        JSONObject respuestaJSONObject = new JSONObject(respuesta);
+                        if (respuestaJSONObject.getBoolean("ok")) {
+                            id = respuestaJSONObject.getString("id");
+                            rev = respuestaJSONObject.getString("rev");
+                            actualizado="si";
+                        } else {
+                            respuesta = "Error al guardar en servidor: " + respuesta;
+                        }
                     }
                     DB db = new DB(getApplicationContext(), "", null, 1);
-                    String[] datos = new String[]{id, rev,idAmigo, nombre, direccion, tel, email, dui, urlCompletaImg};
+                    String[] datos = new String[]{id, rev,idAmigo, nombre, direccion, tel, email, dui, urlCompletaImg, actualizado};
                     respuesta = db.administrar_amigos(accion, datos);
                     if (respuesta.equals("ok")) {
                         Toast.makeText(getApplicationContext(), "Amigo Registrado con Exito.", Toast.LENGTH_SHORT).show();
