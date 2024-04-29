@@ -3,7 +3,7 @@ Desarrollo de los códigos de Programación Computacional II - Ciclo I - 2024 - 
 
 # PROYETO FINAL DE CATEDRA.
 # Requerimientos del proyecto final.
-* Equipos de trabajo - 3 Integrantes Maximo 4.
+* Equipos de trabajo - 4 Integrantes Maximo 5.
 * Base de Datos (Sqlite -> Local, CouchDB, Firebase, Mongo -> Nube)
 * WebServices
 * Notificaciones PUSH
