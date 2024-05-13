@@ -48,10 +48,10 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".lista_amigos"
             android:exported="false" />
         <activity
-            android:name=".lista_amigos"
+            android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

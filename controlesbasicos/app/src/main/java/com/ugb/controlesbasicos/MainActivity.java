@@ -1,5 +1,6 @@
 package com.ugb.controlesbasicos;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
@@ -20,7 +21,18 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.Firebase;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import org.json.JSONObject;
 
@@ -32,11 +44,13 @@ public class MainActivity extends AppCompatActivity {
     TextView tempVal;
     Button btn;
     FloatingActionButton btnRegresar;
-    String accion="nuevo", id="", urlCompletaImg="", rev="", idAmigo="";
+    String accion="nuevo", id="", urlCompletaImg="", getUrlCompletaImgFirestore = "", rev="", idAmigo="";
     Intent tomarFotoIntent;
     ImageView img;
     utilidades utls;
     detectarInternet di;
+    DatabaseReference databaseReference;
+    String miToken="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,65 +77,98 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 try {
-                    tempVal = findViewById(R.id.txtnombre);
-                    String nombre = tempVal.getText().toString();
-
-                    tempVal = findViewById(R.id.txtdireccion);
-                    String direccion = tempVal.getText().toString();
-
-                    tempVal = findViewById(R.id.txtTelefono);
-                    String tel = tempVal.getText().toString();
-
-                    tempVal = findViewById(R.id.txtemail);
-                    String email = tempVal.getText().toString();
-
-                    tempVal = findViewById(R.id.txtdui);
-                    String dui = tempVal.getText().toString();
-
-                    String respuesta = "", actualizado="no";
-                    //guardar datos en el servidor.
-                    if(di.hayConexionInternet()) {
-                        JSONObject datosAmigos = new JSONObject();
-                        if (accion.equals("modificar") && id.length() > 0 && rev.length() > 0) {
-                            datosAmigos.put("_id", id);
-                            datosAmigos.put("_rev", rev);
-                        }
-                        datosAmigos.put("idAmigo", idAmigo);
-                        datosAmigos.put("nombre", nombre);
-                        datosAmigos.put("direccion", direccion);
-                        datosAmigos.put("telefono", tel);
-                        datosAmigos.put("email", email);
-                        datosAmigos.put("dui", dui);
-                        datosAmigos.put("urlCompletaFoto", urlCompletaImg);
-                        datosAmigos.put("actualizado", "si");
-
-                        enviarDatosServidor objGuardarDatosServidor = new enviarDatosServidor(getApplicationContext());
-                        respuesta = objGuardarDatosServidor.execute(datosAmigos.toString()).get();
-
-                        JSONObject respuestaJSONObject = new JSONObject(respuesta);
-                        if (respuestaJSONObject.getBoolean("ok")) {
-                            id = respuestaJSONObject.getString("id");
-                            rev = respuestaJSONObject.getString("rev");
-                            actualizado="si";
-                        } else {
-                            respuesta = "Error al guardar en servidor: " + respuesta;
-                        }
-                    }
-                    DB db = new DB(getApplicationContext(), "", null, 1);
-                    String[] datos = new String[]{id, rev,idAmigo, nombre, direccion, tel, email, dui, urlCompletaImg, actualizado};
-                    respuesta = db.administrar_amigos(accion, datos);
-                    if (respuesta.equals("ok")) {
-                        Toast.makeText(getApplicationContext(), "Amigo Registrado con Exito.", Toast.LENGTH_SHORT).show();
-                        regresarListaAmigos();
-                    } else {
-                        Toast.makeText(getApplicationContext(), "Error: " + respuesta, Toast.LENGTH_LONG).show();
-                    }
+                    subirFotoFirestore();
                 }catch (Exception e){
-                    mostrarMsg("Error al guardar: "+ e.getMessage());
+                    mostrarMsg("Error al llamar metodos de subir fotos: "+ e.getMessage());
                 }
             }
         });
         mostrarDatosAmigos();
+        obtenerToken();
+    }
+    private void subirFotoFirestore(){
+        mostrarMsg("Subiendo foto al servidor...");
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference();
+        Uri file = Uri.fromFile(new File(urlCompletaImg));
+        final StorageReference reference = storageReference.child("fotos/"+file.getLastPathSegment());
+
+        final UploadTask uploadTask = reference.putFile(file);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                mostrarMsg("Error al subir la foto: "+ e.getMessage());
+            }
+        });
+        uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                mostrarMsg("Foto subida con exito.");
+                Task<Uri> downloadUri = uploadTask.continueWithTask(task -> reference.getDownloadUrl()).addOnCompleteListener(task -> {
+                    if( task.isSuccessful() ){
+                        getUrlCompletaImgFirestore = task.getResult().toString();
+                        guardarAmigos();
+                    }else{
+                        mostrarMsg("La foto se subio, pero con errores, nose pudo obtener el enlace.");
+                    }
+                });
+            }
+        });
+    }
+    private void guardarAmigos(){
+        try {
+            tempVal = findViewById(R.id.txtnombre);
+            String nombre = tempVal.getText().toString();
+
+            tempVal = findViewById(R.id.txtdireccion);
+            String direccion = tempVal.getText().toString();
+
+            tempVal = findViewById(R.id.txtTelefono);
+            String tel = tempVal.getText().toString();
+
+            tempVal = findViewById(R.id.txtemail);
+            String email = tempVal.getText().toString();
+
+            tempVal = findViewById(R.id.txtdui);
+            String dui = tempVal.getText().toString();
+
+            databaseReference = FirebaseDatabase.getInstance().getReference("amigos");
+            String key  = databaseReference.push().getKey();
+
+            if( miToken.equals("") || miToken==null ){
+                obtenerToken();
+            }
+            amigos amigo = new amigos(idAmigo,nombre,direccion,tel,email,dui,urlCompletaImg,getUrlCompletaImgFirestore,miToken);
+            if( key!=null ){
+                databaseReference.child(key).setValue(amigo).addOnSuccessListener(unused -> {
+                    mostrarMsg("Amigo registrado con exito.");
+                });
+            }else{
+                mostrarMsg("Error no se inserto el amigo en la base de datos.");
+            }
+            /*DB db = new DB(getApplicationContext(), "", null, 1);
+            String[] datos = new String[]{id, rev,idAmigo, nombre, direccion, tel, email, dui, urlCompletaImg, actualizado};
+            respuesta = db.administrar_amigos(accion, datos);
+            if (respuesta.equals("ok")) {
+                Toast.makeText(getApplicationContext(), "Amigo Registrado con Exito.", Toast.LENGTH_SHORT).show();
+                regresarListaAmigos();
+            } else {
+                Toast.makeText(getApplicationContext(), "Error: " + respuesta, Toast.LENGTH_LONG).show();
+            }*/
+        }catch (Exception ex){
+            mostrarMsg("Error al guardar amigos: "+ex.getMessage());
+        }
+    }
+    private void obtenerToken(){
+        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
+            @Override
+            public void onComplete(@NonNull Task<String> task) {
+                if( !task.isSuccessful() ){
+                    return;
+                }
+                miToken = task.getResult();
+                mostrarMsg(miToken);
+            }
+        });
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {

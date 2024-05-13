@@ -1,8 +1,6 @@
 package com.ugb.controlesbasicos;
 
 public class amigos {
-    String _id;
-    String _rev;
     String idAmigo;
     String nombre;
     String direccion;
@@ -10,9 +8,9 @@ public class amigos {
     String email;
     String dui;
     String foto;
-    public amigos(String _id, String _rev, String idAmigo, String nombre, String direccion, String telefono, String email, String dui, String foto) {
-        this._id = _id;
-        this._rev = _rev;
+    String urlCompletaFotoFirestore;
+    String token;
+    public amigos(String idAmigo, String nombre, String direccion, String telefono, String email, String dui, String foto, String urlCompletaFotoFirestore,String token) {
         this.idAmigo = idAmigo;
         this.nombre = nombre;
         this.direccion = direccion;
@@ -20,18 +18,8 @@ public class amigos {
         this.email = email;
         this.dui = dui;
         this.foto = foto;
-    }
-    public String get_id() {
-        return _id;
-    }
-    public void set_id(String _id) {
-        this._id = _id;
-    }
-    public String get_rev() {
-        return _rev;
-    }
-    public void set_rev(String _rev) {
-        this._rev = _rev;
+        this.urlCompletaFotoFirestore = urlCompletaFotoFirestore;
+        this.token = token;
     }
     public String getFoto() {
         return foto;
@@ -87,5 +75,21 @@ public class amigos {
 
     public void setDui(String dui) {
         this.dui = dui;
+    }
+
+    public String getUrlCompletaFotoFirestore() {
+        return urlCompletaFotoFirestore;
+    }
+
+    public void setUrlCompletaFotoFirestore(String urlCompletaFotoFirestore) {
+        this.urlCompletaFotoFirestore = urlCompletaFotoFirestore;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 }
