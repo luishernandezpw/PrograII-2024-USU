@@ -51,11 +51,13 @@ public class MainActivity extends AppCompatActivity {
     detectarInternet di;
     DatabaseReference databaseReference;
     String miToken="";
+    Token objToken;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        obtenerToken();
         di = new detectarInternet(getApplicationContext());
         utls = new utilidades();
         img = findViewById(R.id.imgAmigo);
@@ -84,7 +86,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         mostrarDatosAmigos();
-        obtenerToken();
+    }
+    void obtenerToken(){
+        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(tarea-> {
+            if (!tarea.isSuccessful()) {
+                return;
+            }
+            miToken = tarea.getResult();
+        });
     }
     private void subirFotoFirestore(){
         mostrarMsg("Subiendo foto al servidor...");
@@ -141,34 +150,14 @@ public class MainActivity extends AppCompatActivity {
             if( key!=null ){
                 databaseReference.child(key).setValue(amigo).addOnSuccessListener(unused -> {
                     mostrarMsg("Amigo registrado con exito.");
+                    regresarListaAmigos();
                 });
             }else{
                 mostrarMsg("Error no se inserto el amigo en la base de datos.");
             }
-            /*DB db = new DB(getApplicationContext(), "", null, 1);
-            String[] datos = new String[]{id, rev,idAmigo, nombre, direccion, tel, email, dui, urlCompletaImg, actualizado};
-            respuesta = db.administrar_amigos(accion, datos);
-            if (respuesta.equals("ok")) {
-                Toast.makeText(getApplicationContext(), "Amigo Registrado con Exito.", Toast.LENGTH_SHORT).show();
-                regresarListaAmigos();
-            } else {
-                Toast.makeText(getApplicationContext(), "Error: " + respuesta, Toast.LENGTH_LONG).show();
-            }*/
         }catch (Exception ex){
             mostrarMsg("Error al guardar amigos: "+ex.getMessage());
         }
-    }
-    private void obtenerToken(){
-        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
-            @Override
-            public void onComplete(@NonNull Task<String> task) {
-                if( !task.isSuccessful() ){
-                    return;
-                }
-                miToken = task.getResult();
-                mostrarMsg(miToken);
-            }
-        });
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
