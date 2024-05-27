@@ -57,6 +57,7 @@ public class lista_amigos extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.lista_amigos);
 
+        lts = findViewById(R.id.ltsAmigos);
         btn = findViewById(R.id.btnAbrirNuevosAmigos);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,6 +78,25 @@ public class lista_amigos extends AppCompatActivity {
             mostrarMsg("Error al detectar si hay conexion "+ e.getMessage());
         }
         buscarAmigos();
+        mostrarChats();
+    }
+    private void mostrarChats(){
+        lts.setOnItemClickListener((parent, view, position, id) -> {
+            try{
+                Bundle bundle = new Bundle();
+                bundle.putString("nombre", datosJSON.getJSONObject(position).getString("nombre") );
+                bundle.putString("to", datosJSON.getJSONObject(position).getString("to") );
+                bundle.putString("from", datosJSON.getJSONObject(position).getString("from") );
+                bundle.putString("urlCompletaFoto", datosJSON.getJSONObject(position).getString("urlCompletaFoto") );
+                bundle.putString("urlCompletaFotoFirestore", datosJSON.getJSONObject(position).getString("urlCompletaFotoFirestore") );
+
+                Intent intent = new Intent(getApplicationContext(), chats.class);
+                intent.putExtras(bundle);
+                startActivity(intent);
+            }catch (Exception ex){
+                mostrarMsg(ex.getMessage());
+            }
+        });
     }
     private void sincronizar(){
         try{
@@ -195,8 +215,6 @@ public class lista_amigos extends AppCompatActivity {
     private void mostrarDatosAmigos(){
         try{
             if( datosJSON.length()>0 ){
-                lts = findViewById(R.id.ltsAmigos);
-
                 alAmigos.clear();
                 alAmigosCopy.clear();
 
